@@ -98,8 +98,8 @@ body { margin: 0; padding: 0; }
         var Frames = 'Frames' + year;
 
         // Your GeoJSON source URL for the corresponding year
-        var geojsonUrl = 'data/'+ year +'IndexFrameCentres.geojson';
-        var geojsonFrames = 'data/'+ year +'IndexFrames.geojson';
+        var geojsonUrl = year +'IndexFrameCentres.geojson';
+        var geojsonFrames = year +'IndexFrames.geojson';
 
         // Add Frames
         map.addSource(Frames, {
