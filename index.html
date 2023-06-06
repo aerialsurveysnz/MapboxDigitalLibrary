@@ -98,8 +98,8 @@ body { margin: 0; padding: 0; }
         var Frames = 'Frames' + year;
 
         // Your GeoJSON source URL for the corresponding year
-        var geojsonUrl = year +'IndexFrameCentres.geojson';
-        var geojsonFrames = year +'IndexFrames.geojson';
+        var geojsonUrl =  year +'IndexFrameCentres.geojson';
+        var geojsonFrames =  year +'IndexFrames.geojson';
 
         // Add Frames
         map.addSource(Frames, {
@@ -166,15 +166,31 @@ body { margin: 0; padding: 0; }
                             "<b>Survey No: </b>"+e.features[0].properties.SURVEY_NO+"</br>"+
                             "<b>Camera: </b>"+e.features[0].properties.CAMERA+"</br>"+
                             "<b>GSD (m): </b>"+e.features[0].properties.GSD+"</br>";
+        const UniqueID =e.features[0].properties.UniqueID;
         
+        var popupContent = document.createElement('div');
+        popupContent.innerHTML = description;
         
+        var copyButton = document.createElement('button');
+        copyButton.innerText = 'Copy Reference';
+        copyButton.style.display = 'block';
+        copyButton.style.margin = '0 auto'; // Center the button horizontally
+        copyButton.addEventListener('click', function() {
+            copyToClipboard(UniqueID);
+            //alert('Content copied to clipboard!');
+        });
+
+        popupContent.appendChild(copyButton);
+
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
         // over the copy being pointed to.
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        }
-          
+    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+  }
+
+        
+        
             // Get the layer's current opacity
             var currentOpacity = map.getPaintProperty(Frames, 'line-opacity');
 
@@ -199,13 +215,21 @@ body { margin: 0; padding: 0; }
             // Set a filter on the target layer to show only matching features
             map.setFilter(Frames, ['==', 'UniqueID', clickedFeatureProperties.UniqueID]);
 
-            new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(description)
-        //.setHTML(district)
-        .addTo(map);
+            var popup = new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setDOMContent(popupContent)
+            .addTo(map);
 
             });
+
+            function copyToClipboard(text) {
+            var dummyInput = document.createElement('textarea');
+            dummyInput.value = text;
+            document.body.appendChild(dummyInput);
+            dummyInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummyInput);
+            }
 
         // Change the cursor to a pointer when the mouse is over the places layer.
         map.on('mouseenter', FrameCentres, () => {
